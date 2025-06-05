@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 const DISCORD_CLIENT_ID = "1348972375575756850";
-const REDIRECT_URI = "http://localhost:5173/";
+const REDIRECT_URI = "https://juneo-rising-frontend-jmww41tfh-srv-yousorandoms-projects.vercel.app/";
 
 export const useDiscordAuth = () => {
   const [user, setUser] = useState(null);
