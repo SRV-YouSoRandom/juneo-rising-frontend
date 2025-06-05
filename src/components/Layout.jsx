@@ -11,58 +11,81 @@ const Layout = ({ user, onLogout, children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div style={{ minHeight: '100vh', backgroundColor: '#111827' }}>
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-white">Space Empire</h1>
+      <header style={{ 
+        backgroundColor: '#1f2937', 
+        borderBottom: '1px solid #374151',
+        padding: '0 1rem'
+      }}>
+        <div style={{ 
+          maxWidth: '80rem', 
+          margin: '0 auto', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          height: '4rem' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h1 style={{ 
+              fontSize: '1.25rem', 
+              fontWeight: '700', 
+              color: '#f9fafb',
+              margin: 0
+            }}>
+              Space Empire
+            </h1>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img
+                src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=32`}
+                alt="Avatar"
+                style={{ 
+                  width: '2rem', 
+                  height: '2rem', 
+                  borderRadius: '50%' 
+                }}
+                onError={(e) => {
+                  e.target.src = `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
+                }}
+              />
+              <span style={{ color: '#f9fafb', fontWeight: '500' }}>
+                {user.username}
+              </span>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <img
-                  src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=32`}
-                  alt="Avatar"
-                  className="w-8 h-8 rounded-full"
-                  onError={(e) => {
-                    e.target.src = `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
-                  }}
-                />
-                <span className="text-white font-medium">{user.username}</span>
-              </div>
-              
-              <button
-                onClick={onLogout}
-                className="text-gray-400 hover:text-white transition-colors p-2 rounded hover:bg-gray-700"
-                title="Logout"
-              >
-                <LogOut size={20} />
-              </button>
-            </div>
+            <button
+              onClick={onLogout}
+              className="btn btn-secondary"
+              style={{ padding: '0.5rem' }}
+              title="Logout"
+            >
+              <LogOut size={20} />
+            </button>
           </div>
         </div>
       </header>
 
       {/* Navigation */}
-      <nav className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
+      <nav style={{ 
+        backgroundColor: '#1f2937', 
+        borderBottom: '1px solid #374151',
+        padding: '0 1rem'
+      }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          <div className="tab-container">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-400'
-                      : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
-                  }`}
+                  className={`tab ${activeTab === tab.id ? 'active' : ''}`}
                 >
                   <Icon size={20} />
-                  <span className="font-medium">{tab.name}</span>
+                  <span>{tab.name}</span>
                 </button>
               );
             })}
@@ -71,7 +94,11 @@ const Layout = ({ user, onLogout, children }) => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main style={{ 
+        maxWidth: '80rem', 
+        margin: '0 auto', 
+        padding: '2rem 1rem' 
+      }}>
         {typeof children === 'function' ? children(activeTab) : children}
       </main>
     </div>

@@ -12,12 +12,12 @@ const UserStats = ({ user }) => {
 
   if (isLoading) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-700 rounded w-1/4"></div>
-          <div className="grid grid-cols-2 gap-4">
+      <div className="card">
+        <div className="animate-pulse" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="loading-skeleton" style={{ height: '1rem', width: '25%' }}></div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-700 rounded"></div>
+              <div key={i} className="loading-skeleton" style={{ height: '5rem' }}></div>
             ))}
           </div>
         </div>
@@ -27,116 +27,126 @@ const UserStats = ({ user }) => {
 
   if (error) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
-        <div className="text-red-400 text-center">
+      <div className="error-message">
+        <h3>Error Loading Stats</h3>
+        <p>
           {error.response?.status === 404 ? 
             "You're not registered in the game yet!" : 
             "Error loading stats"
           }
-        </div>
+        </p>
       </div>
     );
   }
 
   const userStats = stats.data;
 
-  const StatCard = ({ icon: Icon, title, value, subtitle, color = "text-blue-400" }) => (
-    <div className="bg-gray-700 rounded-lg p-4">
-      <div className="flex items-center mb-2">
-        <Icon className={`${color} mr-2`} size={20} />
-        <h3 className="text-white font-semibold">{title}</h3>
+  const StatCard = ({ icon: Icon, title, value, subtitle, color = "text-purple-400" }) => (
+    <div className="stat-card">
+      <div className="stat-icon" style={{ backgroundColor: 'rgba(79, 70, 229, 0.1)' }}>
+        <Icon className={color} size={20} />
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
-      {subtitle && <div className="text-gray-400 text-sm">{subtitle}</div>}
+      <div className="stat-value">{value}</div>
+      <div className="stat-label">{title}</div>
+      {subtitle && <div className="stat-subtitle">{subtitle}</div>}
     </div>
   );
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gray-800 rounded-lg p-6">
-        <div className="flex items-center mb-6">
-          <img 
-            src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`}
-            alt="Avatar"
-            className="w-16 h-16 rounded-full mr-4"
-          />
-          <div>
-            <h2 className="text-2xl font-bold text-white">{user.username}</h2>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Allegiance:</span>
-              <span className={`font-semibold ${
-                userStats.allegiance === 'Emperors League' ? 'text-red-400' : 
-                userStats.allegiance === 'Conquerors League' ? 'text-blue-400' : 
-                'text-gray-400'
-              }`}>
-                {userStats.allegiance || 'None'}
-              </span>
-            </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* User Profile */}
+      <div className="user-profile">
+        <img 
+          src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`}
+          alt="Avatar"
+          className="user-avatar"
+          onError={(e) => {
+            e.target.src = `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
+          }}
+        />
+        <div className="user-info">
+          <h2>{user.username}</h2>
+          <div className="user-allegiance">
+            <span style={{ color: '#9ca3af' }}>Allegiance:</span>
+            <span className={`
+              ${userStats.allegiance === 'Emperors League' ? 'allegiance-emperors' : 
+                userStats.allegiance === 'Conquerors League' ? 'allegiance-conquerors' : 
+                'allegiance-none'}
+            `}>
+              {userStats.allegiance || 'None'}
+            </span>
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <StatCard 
-            icon={Coins}
-            title="Tokens"
-            value={userStats.tokens?.toLocaleString() || '0'}
-            color="text-yellow-400"
-          />
-          
-          <StatCard 
-            icon={Zap}
-            title="Total Power"
-            value={userStats.total_power?.toLocaleString() || '0'}
-            subtitle={`Ships: ${userStats.total_ship_power?.toLocaleString() || '0'} | Defenses: ${userStats.total_defense_power?.toLocaleString() || '0'}`}
-            color="text-purple-400"
-          />
-          
-          <StatCard 
-            icon={Pickaxe}
-            title="Total Mined"
-            value={userStats.total_mined?.toLocaleString() || '0'}
-            color="text-amber-400"
-          />
-          
-          <StatCard 
-            icon={Sword}
-            title="Battles"
-            value={userStats.total_attacked || '0'}
-            subtitle={`Wins: ${userStats.total_victories || '0'} (${userStats.total_attacked > 0 ? Math.round((userStats.total_victories / userStats.total_attacked) * 100) : 0}%)`}
-            color="text-red-400"
-          />
-          
-          <StatCard 
-            icon={Trophy}
-            title="PvE Progress"
-            value={`Level ${userStats.pve_highest_defeated || '0'}`}
-            subtitle={`Current: ${userStats.pve_level || '1'}`}
-            color="text-green-400"
-          />
-          
-          <StatCard 
-            icon={Shield}
-            title="Level"
-            value={userStats.level || '1'}
-            subtitle={`XP: ${userStats.xp?.toLocaleString() || '0'}`}
-            color="text-blue-400"
-          />
-        </div>
+      {/* Stats Grid */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+        gap: '1.5rem' 
+      }}>
+        <StatCard 
+          icon={Coins}
+          title="Tokens"
+          value={userStats.tokens?.toLocaleString() || '0'}
+          color="text-yellow-400"
+        />
+        
+        <StatCard 
+          icon={Zap}
+          title="Total Power"
+          value={userStats.total_power?.toLocaleString() || '0'}
+          subtitle={`Ships: ${userStats.total_ship_power?.toLocaleString() || '0'} | Defenses: ${userStats.total_defense_power?.toLocaleString() || '0'}`}
+          color="text-purple-400"
+        />
+        
+        <StatCard 
+          icon={Pickaxe}
+          title="Total Mined"
+          value={userStats.total_mined?.toLocaleString() || '0'}
+          color="text-amber-400"
+        />
+        
+        <StatCard 
+          icon={Sword}
+          title="Battles"
+          value={userStats.total_attacked || '0'}
+          subtitle={`Wins: ${userStats.total_victories || '0'} (${userStats.total_attacked > 0 ? Math.round((userStats.total_victories / userStats.total_attacked) * 100) : 0}%)`}
+          color="text-red-400"
+        />
+        
+        <StatCard 
+          icon={Trophy}
+          title="PvE Progress"
+          value={`Level ${userStats.pve_highest_defeated || '0'}`}
+          subtitle={`Current: ${userStats.pve_level || '1'}`}
+          color="text-green-400"
+        />
+        
+        <StatCard 
+          icon={Shield}
+          title="Level"
+          value={userStats.level || '1'}
+          subtitle={`XP: ${userStats.xp?.toLocaleString() || '0'}`}
+          color="text-blue-400"
+        />
       </div>
 
       {/* Ships Section */}
       {userStats.ships && Object.keys(userStats.ships).length > 0 && (
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Ships</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Fleet</h3>
+          </div>
+          <div className="fleet-grid">
             {Object.entries(userStats.ships).map(([shipType, levels]) => (
-              <div key={shipType} className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-white font-semibold capitalize mb-2">{shipType}</h4>
-                <div className="space-y-1">
+              <div key={shipType} className="fleet-item">
+                <h4>{shipType}</h4>
+                <div className="fleet-levels">
                   {Object.entries(levels).map(([level, count]) => (
-                    <div key={level} className="flex justify-between text-sm">
-                      <span className="text-gray-400">Level {level}:</span>
-                      <span className="text-white">{count}</span>
+                    <div key={level} className="fleet-level">
+                      <span className="fleet-level-label">Level {level}:</span>
+                      <span className="fleet-level-count">{count}</span>
                     </div>
                   ))}
                 </div>
@@ -148,17 +158,19 @@ const UserStats = ({ user }) => {
 
       {/* Defenses Section */}
       {userStats.defenses && Object.keys(userStats.defenses).length > 0 && (
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Defenses</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Defenses</h3>
+          </div>
+          <div className="fleet-grid">
             {Object.entries(userStats.defenses).map(([defenseType, levels]) => (
-              <div key={defenseType} className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-white font-semibold capitalize mb-2">{defenseType}</h4>
-                <div className="space-y-1">
+              <div key={defenseType} className="fleet-item">
+                <h4>{defenseType}</h4>
+                <div className="fleet-levels">
                   {Object.entries(levels).map(([level, count]) => (
-                    <div key={level} className="flex justify-between text-sm">
-                      <span className="text-gray-400">Level {level}:</span>
-                      <span className="text-white">{count}</span>
+                    <div key={level} className="fleet-level">
+                      <span className="fleet-level-label">Level {level}:</span>
+                      <span className="fleet-level-count">{count}</span>
                     </div>
                   ))}
                 </div>
