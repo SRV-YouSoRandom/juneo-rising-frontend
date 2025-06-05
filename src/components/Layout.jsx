@@ -26,13 +26,16 @@ const Layout = ({ user, onLogout, children }) => {
                   src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=32`}
                   alt="Avatar"
                   className="w-8 h-8 rounded-full"
+                  onError={(e) => {
+                    e.target.src = `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
+                  }}
                 />
                 <span className="text-white font-medium">{user.username}</span>
               </div>
               
               <button
                 onClick={onLogout}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors p-2 rounded hover:bg-gray-700"
                 title="Logout"
               >
                 <LogOut size={20} />
@@ -69,7 +72,7 @@ const Layout = ({ user, onLogout, children }) => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {React.cloneElement(children, { activeTab })}
+        {typeof children === 'function' ? children(activeTab) : children}
       </main>
     </div>
   );

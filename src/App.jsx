@@ -12,17 +12,22 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
       refetchOnWindowFocus: false,
+      retry: 3,
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
   },
 });
 
-const AppContent = ({ activeTab }) => {
+const AppContent = () => {
   const { user, loading, login, logout } = useDiscordAuth();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -33,10 +38,12 @@ const AppContent = ({ activeTab }) => {
 
   return (
     <Layout user={user} onLogout={logout}>
-      <div>
-        {activeTab === 'stats' && <UserStats user={user} />}
-        {activeTab === 'leaderboard' && <Leaderboard user={user} />}
-      </div>
+      {(activeTab) => (
+        <div>
+          {activeTab === 'stats' && <UserStats user={user} />}
+          {activeTab === 'leaderboard' && <Leaderboard user={user} />}
+        </div>
+      )}
     </Layout>
   );
 };
