@@ -33,7 +33,7 @@ const Layout = ({ user, onLogout, children }) => {
               color: '#f9fafb',
               margin: 0
             }}>
-              Space Empire
+              Juneo Rising
             </h1>
           </div>
           
